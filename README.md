@@ -22,13 +22,13 @@ flowchart TD
 
     subgraph Azure AI Foundry - New Agents API
         WF[MortgageLoanOrigination Workflow]
-        O[OrchestratorAgent]
         I[IntakeAgent]
         DOC[DocumentAgent]
         UW[UnderwritingAgent]
         R[RiskAgent]
         CO[ComplianceAgent]
         CM[CommsAgent]
+        O[OrchestratorAgent]
     end
 
     FE -->|Open browser| FE2
@@ -39,37 +39,39 @@ flowchart TD
     A -->|Trigger| C
     A -->|Poll| D
 
-    C -->|code orchestration| I
+    C -->|invoke workflow| WF
+    WF --> I
 
     I -->|intake_result| DOC
     DOC -->|docs_result| UW
     UW -->|uw_result| R
     R -->|risk_result| CO
-    CO -->|compliance_result| O
-    O -->|decision| CM
+    CO -->|compliance_result| CM
+    CM -->|comms_result| O
 
-    CM -->|Final JSON| D
+    O -->|Final JSON| D
 
-    style O fill:#4A90D9,color:#fff
+    style WF fill:#4A90D9,color:#fff
     style I fill:#7BC67E,color:#fff
     style DOC fill:#7BC67E,color:#fff
     style UW fill:#7BC67E,color:#fff
     style R fill:#E8A838,color:#fff
     style CO fill:#E8A838,color:#fff
     style CM fill:#7BC67E,color:#fff
+    style O fill:#4A90D9,color:#fff
 ```
 
 ### Agent Descriptions
 
-| Agent | Role |
-|---|---|
-| **OrchestratorAgent** | Primary coordinator. Calls specialist agents in sequence, applies decision logic, enforces JSON output. |
-| **IntakeAgent** | Validates & normalises application fields. Flags missing/invalid data. |
-| **DocumentAgent** | Checks required docs (W2, paystub, bank statement, ID, purchase contract). Extracts key facts. |
-| **UnderwritingAgent** | Computes DTI, LTV, residual income. Applies simplified Conventional/FHA rules. |
-| **RiskAgent** | Flags fraud signals: name mismatches, income inconsistencies, unusual deposits, short tenure. |
-| **ComplianceAgent** | Enforces fair-lending safe language. Blocks if protected-class reasoning detected. |
-| **CommsAgent** | Generates borrower-facing message and technical underwriter summary. |
+| # | Agent | Role |
+|---|---|---|
+| 1 | **IntakeAgent** | Validates & normalises application fields. Flags missing/invalid data. |
+| 2 | **DocumentAgent** | Checks required docs (W2, paystub, bank statement, ID, purchase contract). Extracts key facts. |
+| 3 | **UnderwritingAgent** | Computes DTI, LTV, residual income. Applies simplified Conventional/FHA rules. |
+| 4 | **RiskAgent** | Flags fraud signals: name mismatches, income inconsistencies, unusual deposits, short tenure. |
+| 5 | **ComplianceAgent** | Enforces fair-lending safe language. Blocks if protected-class reasoning detected. |
+| 6 | **CommsAgent** | Generates borrower-facing message and technical underwriter summary. |
+| 7 | **OrchestratorAgent** | Final coordinator. Consolidates all agent outputs, applies decision logic, enforces JSON output. |
 
 ### Decision Flow
 
