@@ -1,0 +1,59 @@
+{
+  "application_id": "APP-2026-00101",
+  "submission_date": "2026-03-10",
+  "loan_type": "CONVENTIONAL",
+  "loan_purpose": "PURCHASE",
+  "property": {
+    "address": "742 Evergreen Terrace, Springfield, IL 62704",
+    "type": "SINGLE_FAMILY",
+    "appraised_value": 420000,
+    "purchase_price": 415000
+  },
+  "loan": {
+    "requested_amount": 332000,
+    "term_months": 360,
+    "interest_rate_requested": 6.75
+  },
+  "borrower": {
+    "first_name": "Jane",
+    "last_name": "Doe",
+    "ssn_last4": "6789",
+    "dob": "1988-05-14",
+    "email": "jane.doe@example.com",
+    "phone": "555-123-4567",
+    "citizenship": "US_CITIZEN"
+  },
+  "employment": {
+    "employer_name": "Acme Corp",
+    "title": "Senior Engineer",
+    "years_at_job": 4,
+    "monthly_gross_income": 9500
+  },
+  "income": {
+    "monthly_gross": 9500,
+    "other_monthly_income": 0
+  },
+  "debts": {
+    "monthly_auto_loan": 450,
+    "monthly_student_loan": 320,
+    "monthly_credit_card_min": 150,
+    "monthly_other": 0
+  },
+  "assets": {
+    "checking_balance": 45000,
+    "savings_balance": 78000,
+    "retirement_balance": 120000
+  },
+  "credit": {
+    "fico_score": 742,
+    "derogatory_marks": 0,
+    "bankruptcies": 0,
+    "foreclosures": 0
+  },
+  "declarations": {
+    "is_primary_residence": true,
+    "has_outstanding_judgments": false,
+    "is_party_to_lawsuit": false,
+    "has_prior_foreclosure": false
+  }
+}

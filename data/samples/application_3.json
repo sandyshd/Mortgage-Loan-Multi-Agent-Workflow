@@ -1,0 +1,92 @@
+{
+  "application_id": "APP-2026-00103",
+  "submission_date": "2026-03-10",
+  "loan_type": "CONVENTIONAL",
+  "loan_purpose": "PURCHASE",
+  "property": {
+    "address": "221B Baker Street, Chicago, IL 60614",
+    "type": "SINGLE_FAMILY",
+    "appraised_value": 350000,
+    "purchase_price": 345000
+  },
+  "loan": {
+    "requested_amount": 276000,
+    "term_months": 360,
+    "interest_rate_requested": 6.75
+  },
+  "borrower": {
+    "first_name": "Michael",
+    "last_name": "Thompson",
+    "ssn_last4": "4455",
+    "dob": "1985-08-22",
+    "email": "m.thompson@example.com",
+    "phone": "555-321-9876",
+    "citizenship": "US_CITIZEN"
+  },
+  "employment": {
+    "employer_name": "Northwind Traders",
+    "title": "Sales Manager",
+    "years_at_job": 3,
+    "monthly_gross_income": 8500
+  },
+  "income": {
+    "monthly_gross": 8500,
+    "other_monthly_income": 0
+  },
+  "debts": {
+    "monthly_auto_loan": 300,
+    "monthly_student_loan": 250,
+    "monthly_credit_card_min": 100,
+    "monthly_other": 0
+  },
+  "assets": {
+    "checking_balance": 95000,
+    "savings_balance": 42000,
+    "retirement_balance": 85000
+  },
+  "credit": {
+    "fico_score": 710,
+    "derogatory_marks": 0,
+    "bankruptcies": 0,
+    "foreclosures": 0
+  },
+  "declarations": {
+    "is_primary_residence": true,
+    "has_outstanding_judgments": false,
+    "is_party_to_lawsuit": false,
+    "has_prior_foreclosure": false
+  },
+  "_risk_notes": {
+    "description": "Human-in-the-loop scenario: W-2 shows name 'Mike R. Thomson' (mismatch with application name 'Michael Thompson'). Bank statement contains a $45,000 unexplained deposit on 2026-01-15.",
+    "expected_decision": "REFER_TO_HUMAN",
+    "expected_risk_level": "HIGH",
+    "expected_risk_flags": ["NAME_MISMATCH_W2", "LARGE_UNEXPLAINED_DEPOSIT"]
+  },
+  "provided_docs": [
+    {
+      "doc_type": "W2",
+      "status": "RECEIVED",
+      "text_snippet": "Employee Name: Mike R. Thomson. Employer: Northwind Traders. Wages: $102,000.00. Tax Year: 2025."
+    },
+    {
+      "doc_type": "PAYSTUB",
+      "status": "RECEIVED",
+      "text_snippet": "Employee: Michael Thompson. Pay Period: Feb 1-28, 2026. Gross Pay: $8,500.00. Employer: Northwind Traders."
+    },
+    {
+      "doc_type": "BANK_STATEMENT",
+      "status": "RECEIVED",
+      "text_snippet": "Account Holder: Michael Thompson. Statement Period: Jan 2026. Opening Balance: $48,200. Deposit 01/15: $45,000.00 (Source: Unknown wire transfer). Closing Balance: $95,150."
+    },
+    {
+      "doc_type": "GOVERNMENT_ID",
+      "status": "RECEIVED",
+      "text_snippet": "Illinois Driver License. Name: Michael Thompson. DOB: 08/22/1985. Exp: 06/2028."
+    },
+    {
+      "doc_type": "PURCHASE_CONTRACT",
+      "status": "RECEIVED",
+      "text_snippet": "Purchase Agreement. Buyer: Michael Thompson. Property: 221B Baker Street, Chicago IL 60614. Price: $345,000. Closing Date: 04/15/2026."
+    }
+  ]
+}

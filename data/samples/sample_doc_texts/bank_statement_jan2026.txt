@@ -1,0 +1,29 @@
+SYNTHETIC DOCUMENT – FOR DEMO PURPOSES ONLY
+
+                    BANK OF SPRINGFIELD
+                    MONTHLY STATEMENT
+                    January 2026
+
+Account Holder: Jane Doe
+Account Number: ****4321 (Checking)
+
+Opening Balance:  $38,200.00
+
+DEPOSITS
+  01/15  Direct Deposit – Acme Corp      $6,021.00
+  01/31  Direct Deposit – Acme Corp      $6,021.00
+
+WITHDRAWALS
+  01/03  Auto Loan Payment               $  450.00
+  01/05  Student Loan – Navient          $  320.00
+  01/10  Credit Card Payment             $  150.00
+  01/15  Rent Transfer                   $1,800.00
+  01/20  Utilities                       $  185.00
+  01/28  Grocery / Misc                  $  620.00
+
+Closing Balance: $46,717.00
+
+Savings Account ****8765
+  Opening Balance: $76,500.00
+  01/31  Interest Earned: $  48.50
+  Closing Balance: $76,548.50

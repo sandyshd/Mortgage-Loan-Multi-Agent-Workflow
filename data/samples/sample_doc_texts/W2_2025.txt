@@ -1,0 +1,18 @@
+SYNTHETIC DOCUMENT – FOR DEMO PURPOSES ONLY
+
+                        WAGE AND TAX STATEMENT  2025
+                               Form W-2
+
+Employee: Jane Doe
+SSN: ***-**-6789
+Employer: Acme Corp
+EIN: 12-3456789
+
+Box 1 – Wages, tips, other compensation:     $114,000.00
+Box 2 – Federal income tax withheld:          $ 19,380.00
+Box 3 – Social security wages:                $114,000.00
+Box 4 – Social security tax withheld:         $  7,068.00
+Box 5 – Medicare wages and tips:              $114,000.00
+Box 6 – Medicare tax withheld:                $  1,653.00
+
+State: IL        State wages: $114,000.00     State tax: $5,415.00

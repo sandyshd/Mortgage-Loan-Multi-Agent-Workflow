@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mortgage Loan Origination – AI Foundry Demo</title>
+<style>
+  /* ── Reset & Base ──────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f7fa; --surface: #ffffff; --border: #e2e8f0;
+    --primary: #2563eb; --primary-hover: #1d4ed8; --primary-light: #dbeafe;
+    --success: #16a34a; --success-bg: #dcfce7;
+    --warning: #d97706; --warning-bg: #fef3c7;
+    --danger: #dc2626; --danger-bg: #fee2e2;
+    --info: #0891b2; --info-bg: #cffafe;
+    --text: #1e293b; --text-secondary: #64748b; --text-light: #94a3b8;
+    --radius: 10px; --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+  }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+  }
+
+  /* ── Layout ────────────────────────────────────────────────────── */
+  .header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    color: #fff; padding: 1.5rem 2rem; box-shadow: var(--shadow-lg);
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .header p { font-size: .85rem; opacity: .85; margin-top: .25rem; }
+  .disclaimer {
+    background: #fef3c7; color: #92400e; text-align: center;
+    padding: .5rem; font-size: .78rem; font-weight: 500;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+  .grid { display: grid; grid-template-columns: 420px 1fr; gap: 1.5rem; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ── Cards ─────────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .card-header {
+    padding: .75rem 1.25rem; font-weight: 600; font-size: .95rem;
+    border-bottom: 1px solid var(--border); background: #f8fafc;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .card-body { padding: 1.25rem; }
+
+  /* ── Form ──────────────────────────────────────────────────────── */
+  .form-section { margin-bottom: 1rem; }
+  .form-section-title {
+    font-size: .8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--primary); margin-bottom: .5rem;
+    padding-bottom: .25rem; border-bottom: 2px solid var(--primary-light);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .5rem; }
+  .form-row.full { grid-template-columns: 1fr; }
+  label { font-size: .78rem; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: .15rem; }
+  input, select {
+    width: 100%; padding: .45rem .6rem; border: 1px solid var(--border);
+    border-radius: 6px; font-size: .85rem; background: #fff;
+    transition: border-color .15s;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+  /* ── Buttons ───────────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .6rem 1.2rem; border: none; border-radius: 6px;
+    font-size: .85rem; font-weight: 600; cursor: pointer;
+    transition: background .15s, transform .1s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #15803d; }
+  .btn-outline {
+    background: transparent; color: var(--primary);
+    border: 1.5px solid var(--primary);
+  }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn-group { display: flex; gap: .5rem; margin-top: 1rem; flex-wrap: wrap; }
+
+  /* ── Tabs ───────────────────────────────────────────────────────── */
+  .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 1rem; }
+  .tab {
+    padding: .5rem 1rem; font-size: .85rem; font-weight: 500;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; color: var(--text-secondary);
+    transition: color .15s, border-color .15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Status badges ─────────────────────────────────────────────── */
+  .badge {
+    display: inline-block; padding: .2rem .6rem; border-radius: 999px;
+    font-size: .75rem; font-weight: 600; text-transform: uppercase;
+  }
+  .badge-approve { background: var(--success-bg); color: var(--success); }
+  .badge-conditional { background: var(--warning-bg); color: var(--warning); }
+  .badge-refer { background: var(--info-bg); color: var(--info); }
+  .badge-decline { background: var(--danger-bg); color: var(--danger); }
+  .badge-pending { background: #e2e8f0; color: #64748b; }
+  .badge-running { background: var(--primary-light); color: var(--primary); }
+
+  /* ── Result sections ───────────────────────────────────────────── */
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 900px) { .result-grid { grid-template-columns: 1fr; } }
+  .metric-card {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    padding: .75rem; text-align: center;
+  }
+  .metric-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+  .metric-label { font-size: .75rem; color: var(--text-secondary); margin-top: .15rem; }
+  .detail-section { margin-bottom: 1rem; }
+  .detail-section h4 {
+    font-size: .8rem; font-weight: 700; text-transform: uppercase;
+    color: var(--text-secondary); margin-bottom: .4rem;
+  }
+  .detail-list { list-style: none; }
+  .detail-list li {
+    padding: .3rem .5rem; font-size: .85rem; border-left: 3px solid var(--primary);
+    margin-bottom: .3rem; background: #f8fafc; border-radius: 0 4px 4px 0;
+  }
+  .detail-list.risk li { border-left-color: var(--danger); }
+  .detail-list.compliance li { border-left-color: var(--warning); }
+  .detail-list.missing li { border-left-color: var(--info); }
+  .message-box {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+    padding: 1rem; font-size: .9rem; line-height: 1.6; white-space: pre-wrap;
+  }
+
+  /* ── Spinner ───────────────────────────────────────────────────── */
+  .spinner {
+    display: inline-block; width: 18px; height: 18px;
+    border: 2.5px solid var(--primary-light); border-top-color: var(--primary);
+    border-radius: 50%; animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Log ────────────────────────────────────────────────────────── */
+  .log {
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: .78rem; background: #1e293b; color: #e2e8f0;
+    border-radius: 8px; padding: .75rem; max-height: 200px;
+    overflow-y: auto; line-height: 1.7;
+  }
+  .log-entry { padding: .1rem 0; }
+  .log-time { color: #94a3b8; }
+  .log-ok { color: #4ade80; }
+  .log-err { color: #f87171; }
+  .log-info { color: #38bdf8; }
+
+  /* ── Sample selector ───────────────────────────────────────────── */
+  .sample-bar {
+    display: flex; gap: .5rem; align-items: center; margin-bottom: .75rem;
+    font-size: .82rem;
+  }
+  .sample-bar span { color: var(--text-secondary); font-weight: 500; }
+
+  /* ── JSON editor ───────────────────────────────────────────────── */
+  .json-editor {
+    width: 100%; min-height: 300px; font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: .8rem; border: 1px solid var(--border); border-radius: 6px;
+    padding: .75rem; resize: vertical; background: #fafbfc;
+  }
+  .json-editor:focus { outline: none; border-color: var(--primary); }
+
+  .hidden { display: none !important; }
+
+  /* ── Agent Progress Stepper ────────────────────────────────────── */
+  .agent-stepper {
+    display: flex; flex-direction: column; gap: 0;
+    margin-top: 1.25rem; padding: 0 1rem;
+  }
+  .agent-step {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .55rem 0; position: relative;
+  }
+  .agent-step:not(:last-child)::after {
+    content: ''; position: absolute; left: 13px; top: 38px;
+    width: 2px; height: calc(100% - 22px); background: var(--border);
+  }
+  .agent-step.completed:not(:last-child)::after { background: var(--success); }
+  .agent-step.active:not(:last-child)::after {
+    background: linear-gradient(to bottom, var(--primary) 50%, var(--border) 50%);
+  }
+  .step-icon {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700; border: 2px solid var(--border);
+    background: #fff; color: var(--text-light); position: relative; z-index: 1;
+    transition: all .3s ease;
+  }
+  .agent-step.completed .step-icon {
+    background: var(--success); border-color: var(--success); color: #fff;
+  }
+  .agent-step.active .step-icon {
+    background: var(--primary-light); border-color: var(--primary); color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(37,99,235,.15);
+    animation: pulse-ring 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(37,99,235,.15); }
+    50% { box-shadow: 0 0 0 8px rgba(37,99,235,.08); }
+  }
+  .step-label {
+    font-size: .85rem; font-weight: 500; color: var(--text-light);
+    transition: color .3s ease;
+  }
+  .step-desc {
+    font-size: .72rem; color: var(--text-light); margin-top: .1rem;
+    transition: color .3s ease;
+  }
+  .agent-step.completed .step-label { color: var(--success); }
+  .agent-step.completed .step-desc { color: var(--success); opacity: .8; }
+  .agent-step.active .step-label { color: var(--primary); font-weight: 600; }
+  .agent-step.active .step-desc { color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<!-- ━━ Header ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="header">
+  <h1>🏠 Mortgage Loan Origination</h1>
+  <p>Azure AI Foundry Multi-Agent Workflow Demo</p>
+</div>
+<div class="disclaimer">
+  ⚠️ SYNTHETIC DEMO ONLY — Not real underwriting. All data is fictional.
+</div>
+
+<!-- ━━ Main ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ── Left: Input Panel ──────────────────────────────────────── -->
+    <div>
+      <div class="card">
+        <div class="card-header">📋 Application Input</div>
+        <div class="card-body">
+
+          <!-- Tabs: Form / JSON -->
+          <div class="tabs">
+            <div class="tab active" data-tab="form">Form</div>
+            <div class="tab" data-tab="json">JSON Editor</div>
+          </div>
+
+          <!-- ── Form Tab ──────────────────────────────────────── -->
+          <div class="tab-content active" id="tab-form">
+            <div class="sample-bar">
+              <span>Load sample:</span>
+              <button class="btn btn-outline" style="padding:.3rem .7rem; font-size:.78rem" onclick="loadSample(1)">App 1 (Good)</button>
+              <button class="btn btn-outline" style="padding:.3rem .7rem; font-size:.78rem" onclick="loadSample(2)">App 2 (FHA)</button>
+              <button class="btn btn-outline" style="padding:.3rem .7rem; font-size:.78rem; border-color:#E8A838; color:#E8A838" onclick="loadSample(3)">App 3 (Risk)</button>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Loan Details</div>
+              <div class="form-row">
+                <div><label>Application ID</label><input id="f-appId" value="APP-2026-00101" /></div>
+                <div><label>Submission Date</label><input id="f-subDate" type="date" value="2026-03-10" /></div>
+              </div>
+              <div class="form-row">
+                <div>
+                  <label>Loan Type</label>
+                  <select id="f-loanType"><option>CONVENTIONAL</option><option>FHA</option></select>
+                </div>
+                <div>
+                  <label>Loan Purpose</label>
+                  <select id="f-loanPurpose"><option>PURCHASE</option><option>REFINANCE</option></select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div><label>Requested Amount ($)</label><input id="f-loanAmt" type="number" value="332000" /></div>
+                <div><label>Term (months)</label><input id="f-term" type="number" value="360" /></div>
+              </div>
+              <div class="form-row full">
+                <div><label>Interest Rate Requested (%)</label><input id="f-rate" type="number" step="0.01" value="6.75" /></div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Borrower</div>
+              <div class="form-row">
+                <div><label>First Name</label><input id="f-fname" value="Jane" /></div>
+                <div><label>Last Name</label><input id="f-lname" value="Doe" /></div>
+              </div>
+              <div class="form-row">
+                <div><label>SSN (last 4)</label><input id="f-ssn" maxlength="4" value="6789" /></div>
+                <div><label>Date of Birth</label><input id="f-dob" type="date" value="1988-05-14" /></div>
+              </div>
+              <div class="form-row">
+                <div><label>Email</label><input id="f-email" value="jane.doe@example.com" /></div>
+                <div><label>Phone</label><input id="f-phone" value="555-123-4567" /></div>
+              </div>
+              <div class="form-row full">
+                <div>
+                  <label>Citizenship</label>
+                  <select id="f-citizenship"><option>US_CITIZEN</option><option>PERMANENT_RESIDENT</option><option>NON_PERMANENT_RESIDENT</option></select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Property</div>
+              <div class="form-row full">
+                <div><label>Address</label><input id="f-propAddr" value="742 Evergreen Terrace, Springfield, IL 62704" /></div>
+              </div>
+              <div class="form-row">
+                <div>
+                  <label>Type</label>
+                  <select id="f-propType"><option>SINGLE_FAMILY</option><option>CONDO</option><option>TOWNHOUSE</option><option>MULTI_FAMILY</option></select>
+                </div>
+                <div><label>Appraised Value ($)</label><input id="f-appraised" type="number" value="420000" /></div>
+              </div>
+              <div class="form-row full">
+                <div><label>Purchase Price ($)</label><input id="f-purchasePrice" type="number" value="415000" /></div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Employment & Income</div>
+              <div class="form-row">
+                <div><label>Employer</label><input id="f-employer" value="Acme Corp" /></div>
+                <div><label>Title</label><input id="f-jobTitle" value="Senior Engineer" /></div>
+              </div>
+              <div class="form-row">
+                <div><label>Years at Job</label><input id="f-years" type="number" step="0.5" value="4" /></div>
+                <div><label>Monthly Gross Income ($)</label><input id="f-income" type="number" value="9500" /></div>
+              </div>
+              <div class="form-row full">
+                <div><label>Other Monthly Income ($)</label><input id="f-otherIncome" type="number" value="0" /></div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Monthly Debts</div>
+              <div class="form-row">
+                <div><label>Auto Loan ($)</label><input id="f-autoLoan" type="number" value="450" /></div>
+                <div><label>Student Loan ($)</label><input id="f-studentLoan" type="number" value="320" /></div>
+              </div>
+              <div class="form-row">
+                <div><label>Credit Card Min ($)</label><input id="f-cc" type="number" value="150" /></div>
+                <div><label>Other ($)</label><input id="f-otherDebt" type="number" value="0" /></div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Assets</div>
+              <div class="form-row">
+                <div><label>Checking ($)</label><input id="f-checking" type="number" value="45000" /></div>
+                <div><label>Savings ($)</label><input id="f-savings" type="number" value="78000" /></div>
+              </div>
+              <div class="form-row full">
+                <div><label>Retirement ($)</label><input id="f-retirement" type="number" value="120000" /></div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Credit</div>
+              <div class="form-row">
+                <div><label>FICO Score</label><input id="f-fico" type="number" value="742" /></div>
+                <div><label>Derogatory Marks</label><input id="f-derog" type="number" value="0" /></div>
+              </div>
+              <div class="form-row">
+                <div><label>Bankruptcies</label><input id="f-bankruptcy" type="number" value="0" /></div>
+                <div><label>Foreclosures</label><input id="f-foreclosure" type="number" value="0" /></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── JSON Tab ──────────────────────────────────────── -->
+          <div class="tab-content" id="tab-json">
+            <textarea class="json-editor" id="jsonEditor"></textarea>
+          </div>
+
+          <!-- ── Action buttons ────────────────────────────────── -->
+          <div class="btn-group">
+            <button class="btn btn-primary" id="btnSubmit" onclick="submitApp()">📤 Submit Application</button>
+            <button class="btn btn-success" id="btnRun" onclick="runWorkflow()" disabled>🚀 Run Workflow</button>
+            <button class="btn btn-outline" id="btnStatus" onclick="checkStatus()" disabled>🔄 Check Status</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Activity Log ──────────────────────────────────────── -->
+      <div class="card" style="margin-top:1rem">
+        <div class="card-header">📜 Activity Log</div>
+        <div class="card-body" style="padding:.75rem">
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right: Results Panel ───────────────────────────────────── -->
+    <div>
+      <div class="card" id="resultCard">
+        <div class="card-header">
+          📊 Workflow Result
+          <span id="statusBadge" class="badge badge-pending" style="margin-left:auto">WAITING</span>
+        </div>
+        <div class="card-body">
+
+          <!-- Waiting state -->
+          <div id="resultWaiting" style="text-align:center; padding:3rem 1rem; color:var(--text-light)">
+            <div style="font-size:3rem; margin-bottom:.5rem">📄</div>
+            <p>Submit an application and run the workflow to see results here.</p>
+          </div>
+
+          <!-- Running state -->
+          <div id="resultRunning" class="hidden" style="text-align:center; padding:2rem 1rem">
+            <div class="spinner" style="width:40px; height:40px; border-width:4px; margin-bottom:1rem"></div>
+            <p style="color:var(--text-secondary); font-weight:500">Processing application through multi-agent workflow…</p>
+            <div class="agent-stepper" id="agentStepper">
+              <div class="agent-step" data-agent="0">
+                <div class="step-icon">1</div>
+                <div><div class="step-label">Intake Agent</div><div class="step-desc">Validating application data</div></div>
+              </div>
+              <div class="agent-step" data-agent="1">
+                <div class="step-icon">2</div>
+                <div><div class="step-label">Document Agent</div><div class="step-desc">Reviewing submitted documents</div></div>
+              </div>
+              <div class="agent-step" data-agent="2">
+                <div class="step-icon">3</div>
+                <div><div class="step-label">Underwriting Agent</div><div class="step-desc">Calculating DTI, LTV & eligibility</div></div>
+              </div>
+              <div class="agent-step" data-agent="3">
+                <div class="step-icon">4</div>
+                <div><div class="step-label">Risk Agent</div><div class="step-desc">Assessing risk flags</div></div>
+              </div>
+              <div class="agent-step" data-agent="4">
+                <div class="step-icon">5</div>
+                <div><div class="step-label">Compliance Agent</div><div class="step-desc">Checking regulatory compliance</div></div>
+              </div>
+              <div class="agent-step" data-agent="5">
+                <div class="step-icon">6</div>
+                <div><div class="step-label">Orchestrator Agent</div><div class="step-desc">Consolidating decision</div></div>
+              </div>
+              <div class="agent-step" data-agent="6">
+                <div class="step-icon">7</div>
+                <div><div class="step-label">Comms Agent</div><div class="step-desc">Drafting borrower &amp; underwriter messages</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result state -->
+          <div id="resultContent" class="hidden">
+
+            <!-- Decision banner -->
+            <div id="decisionBanner" style="text-align:center; padding:1rem; border-radius:8px; margin-bottom:1rem">
+              <div style="font-size:.78rem; text-transform:uppercase; font-weight:600; opacity:.8">Decision</div>
+              <div id="decisionText" style="font-size:1.8rem; font-weight:700"></div>
+              <div id="humanReview" class="hidden" style="margin-top:.5rem; font-size:.82rem">
+                👤 <strong>Human review required</strong> — underwriter packet attached
+              </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="detail-section">
+              <h4>📐 Metrics</h4>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:.5rem" id="metricsGrid"></div>
+            </div>
+
+            <!-- Reasons -->
+            <div class="detail-section" id="reasonsSection">
+              <h4>📝 Reasons</h4>
+              <ul class="detail-list" id="reasonsList"></ul>
+            </div>
+
+            <!-- Missing Documents -->
+            <div class="detail-section hidden" id="missingDocsSection">
+              <h4>📎 Missing Documents</h4>
+              <ul class="detail-list missing" id="missingDocsList"></ul>
+            </div>
+
+            <!-- Risk Flags -->
+            <div class="detail-section hidden" id="riskSection">
+              <h4>🚩 Risk Flags</h4>
+              <ul class="detail-list risk" id="riskList"></ul>
+            </div>
+
+            <!-- Compliance Notes -->
+            <div class="detail-section hidden" id="complianceSection">
+              <h4>🛡️ Compliance Notes</h4>
+              <ul class="detail-list compliance" id="complianceList"></ul>
+            </div>
+
+            <!-- Tabs for messages -->
+            <div class="tabs" style="margin-top:1rem">
+              <div class="tab active" data-tab="borrower-msg">Borrower Message</div>
+              <div class="tab" data-tab="uw-summary">Underwriter Summary</div>
+            </div>
+            <div class="tab-content active" id="tab-borrower-msg">
+              <div class="message-box" id="borrowerMsg"></div>
+            </div>
+            <div class="tab-content" id="tab-uw-summary">
+              <div class="message-box" id="uwSummary"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Config ───────────────────────────────────────────────────────────
+const API = window.location.origin;
+let currentAppId = null;
+let pollTimer = null;
+let agentAnimTimer = null;
+let agentAnimStep = 0;
+const AGENT_STEP_COUNT = 7;
+const AGENT_STEP_INTERVAL = 5000; // ms per agent step
+
+// ── Samples ──────────────────────────────────────────────────────────
+const SAMPLES = {
+  1: {
+    application_id:"APP-2026-00101", submission_date:"2026-03-10",
+    loan_type:"CONVENTIONAL", loan_purpose:"PURCHASE",
+    property:{address:"742 Evergreen Terrace, Springfield, IL 62704",type:"SINGLE_FAMILY",appraised_value:420000,purchase_price:415000},
+    loan:{requested_amount:332000,term_months:360,interest_rate_requested:6.75},
+    borrower:{first_name:"Jane",last_name:"Doe",ssn_last4:"6789",dob:"1988-05-14",email:"jane.doe@example.com",phone:"555-123-4567",citizenship:"US_CITIZEN"},
+    employment:{employer_name:"Acme Corp",title:"Senior Engineer",years_at_job:4,monthly_gross_income:9500},
+    income:{monthly_gross:9500,other_monthly_income:0},
+    debts:{monthly_auto_loan:450,monthly_student_loan:320,monthly_credit_card_min:150,monthly_other:0},
+    assets:{checking_balance:45000,savings_balance:78000,retirement_balance:120000},
+    credit:{fico_score:742,derogatory_marks:0,bankruptcies:0,foreclosures:0},
+    declarations:{is_primary_residence:true,has_outstanding_judgments:false,is_party_to_lawsuit:false,has_prior_foreclosure:false}
+  },
+  2: {
+    application_id:"APP-2026-00102", submission_date:"2026-03-10",
+    loan_type:"FHA", loan_purpose:"PURCHASE",
+    property:{address:"1600 Pennsylvania Ave NW, Washington, DC 20500",type:"CONDO",appraised_value:310000,purchase_price:325000},
+    loan:{requested_amount:308750,term_months:360,interest_rate_requested:6.50},
+    borrower:{first_name:"Carlos",last_name:"Rivera",ssn_last4:"1234",dob:"1992-11-02",email:"carlos.r@example.com",phone:"555-987-6543",citizenship:"US_CITIZEN"},
+    employment:{employer_name:"Metro Health System",title:"Registered Nurse",years_at_job:1,monthly_gross_income:5800},
+    income:{monthly_gross:5800,other_monthly_income:400},
+    debts:{monthly_auto_loan:380,monthly_student_loan:600,monthly_credit_card_min:200,monthly_other:100},
+    assets:{checking_balance:12000,savings_balance:8500,retirement_balance:22000},
+    credit:{fico_score:648,derogatory_marks:1,bankruptcies:0,foreclosures:0},
+    declarations:{is_primary_residence:true,has_outstanding_judgments:false,is_party_to_lawsuit:false,has_prior_foreclosure:false}
+  },
+  3: {
+    application_id:"APP-2026-00103", submission_date:"2026-03-10",
+    loan_type:"CONVENTIONAL", loan_purpose:"PURCHASE",
+    property:{address:"221B Baker Street, Chicago, IL 60614",type:"SINGLE_FAMILY",appraised_value:350000,purchase_price:345000},
+    loan:{requested_amount:276000,term_months:360,interest_rate_requested:6.75},
+    borrower:{first_name:"Michael",last_name:"Thompson",ssn_last4:"4455",dob:"1985-08-22",email:"m.thompson@example.com",phone:"555-321-9876",citizenship:"US_CITIZEN"},
+    employment:{employer_name:"Northwind Traders",title:"Sales Manager",years_at_job:3,monthly_gross_income:8500},
+    income:{monthly_gross:8500,other_monthly_income:0},
+    debts:{monthly_auto_loan:300,monthly_student_loan:250,monthly_credit_card_min:100,monthly_other:0},
+    assets:{checking_balance:95000,savings_balance:42000,retirement_balance:85000},
+    credit:{fico_score:710,derogatory_marks:0,bankruptcies:0,foreclosures:0},
+    declarations:{is_primary_residence:true,has_outstanding_judgments:false,is_party_to_lawsuit:false,has_prior_foreclosure:false},
+    provided_docs:[
+      {doc_type:"W2",status:"RECEIVED",text_snippet:"Employee Name: Mike R. Thomson. Employer: Northwind Traders. Wages: $102,000.00. Tax Year: 2025."},
+      {doc_type:"PAYSTUB",status:"RECEIVED",text_snippet:"Employee: Michael Thompson. Pay Period: Feb 1-28, 2026. Gross Pay: $8,500.00. Employer: Northwind Traders."},
+      {doc_type:"BANK_STATEMENT",status:"RECEIVED",text_snippet:"Account Holder: Michael Thompson. Statement Period: Jan 2026. Opening Balance: $48,200. Deposit 01/15: $45,000.00 (Source: Unknown wire transfer). Closing Balance: $95,150."},
+      {doc_type:"GOVERNMENT_ID",status:"RECEIVED",text_snippet:"Illinois Driver License. Name: Michael Thompson. DOB: 08/22/1985. Exp: 06/2028."},
+      {doc_type:"PURCHASE_CONTRACT",status:"RECEIVED",text_snippet:"Purchase Agreement. Buyer: Michael Thompson. Property: 221B Baker Street, Chicago IL 60614. Price: $345,000. Closing Date: 04/15/2026."}
+    ]
+  }
+};
+
+// ── Tab switching ────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const group = tab.parentElement;
+    const parent = group.parentElement;
+    group.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    parent.querySelectorAll(':scope > .tab-content').forEach(tc => tc.classList.remove('active'));
+    const target = parent.querySelector('#tab-' + tab.dataset.tab);
+    if (target) target.classList.add('active');
+    // Sync form ↔ JSON
+    if (tab.dataset.tab === 'json') syncFormToJson();
+    if (tab.dataset.tab === 'form') syncJsonToForm();
+  });
+});
+
+// ── Logging ──────────────────────────────────────────────────────────
+function log(msg, type = 'info') {
+  const el = document.getElementById('log');
+  const time = new Date().toLocaleTimeString();
+  const cls = type === 'ok' ? 'log-ok' : type === 'err' ? 'log-err' : 'log-info';
+  el.innerHTML += `<div class="log-entry"><span class="log-time">[${time}]</span> <span class="${cls}">${msg}</span></div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── Form ↔ JSON sync ────────────────────────────────────────────────
+function buildPayloadFromForm() {
+  return {
+    application_id: v('f-appId'),
+    submission_date: v('f-subDate'),
+    loan_type: v('f-loanType'),
+    loan_purpose: v('f-loanPurpose'),
+    property: { address: v('f-propAddr'), type: v('f-propType'), appraised_value: n('f-appraised'), purchase_price: n('f-purchasePrice') },
+    loan: { requested_amount: n('f-loanAmt'), term_months: n('f-term'), interest_rate_requested: n('f-rate') },
+    borrower: { first_name: v('f-fname'), last_name: v('f-lname'), ssn_last4: v('f-ssn'), dob: v('f-dob'), email: v('f-email'), phone: v('f-phone'), citizenship: v('f-citizenship') },
+    employment: { employer_name: v('f-employer'), title: v('f-jobTitle'), years_at_job: n('f-years'), monthly_gross_income: n('f-income') },
+    income: { monthly_gross: n('f-income'), other_monthly_income: n('f-otherIncome') },
+    debts: { monthly_auto_loan: n('f-autoLoan'), monthly_student_loan: n('f-studentLoan'), monthly_credit_card_min: n('f-cc'), monthly_other: n('f-otherDebt') },
+    assets: { checking_balance: n('f-checking'), savings_balance: n('f-savings'), retirement_balance: n('f-retirement') },
+    credit: { fico_score: n('f-fico'), derogatory_marks: n('f-derog'), bankruptcies: n('f-bankruptcy'), foreclosures: n('f-foreclosure') },
+    declarations: { is_primary_residence: true, has_outstanding_judgments: false, is_party_to_lawsuit: false, has_prior_foreclosure: false }
+  };
+}
+function v(id) { return document.getElementById(id).value; }
+function n(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function syncFormToJson() {
+  document.getElementById('jsonEditor').value = JSON.stringify(buildPayloadFromForm(), null, 2);
+}
+
+function populateForm(d) {
+  const map = {
+    'f-appId': d.application_id, 'f-subDate': d.submission_date,
+    'f-loanType': d.loan_type, 'f-loanPurpose': d.loan_purpose,
+    'f-propAddr': d.property?.address, 'f-propType': d.property?.type,
+    'f-appraised': d.property?.appraised_value, 'f-purchasePrice': d.property?.purchase_price,
+    'f-loanAmt': d.loan?.requested_amount, 'f-term': d.loan?.term_months, 'f-rate': d.loan?.interest_rate_requested,
+    'f-fname': d.borrower?.first_name, 'f-lname': d.borrower?.last_name,
+    'f-ssn': d.borrower?.ssn_last4, 'f-dob': d.borrower?.dob,
+    'f-email': d.borrower?.email, 'f-phone': d.borrower?.phone, 'f-citizenship': d.borrower?.citizenship,
+    'f-employer': d.employment?.employer_name, 'f-jobTitle': d.employment?.title,
+    'f-years': d.employment?.years_at_job, 'f-income': d.income?.monthly_gross || d.employment?.monthly_gross_income,
+    'f-otherIncome': d.income?.other_monthly_income,
+    'f-autoLoan': d.debts?.monthly_auto_loan, 'f-studentLoan': d.debts?.monthly_student_loan,
+    'f-cc': d.debts?.monthly_credit_card_min, 'f-otherDebt': d.debts?.monthly_other,
+    'f-checking': d.assets?.checking_balance, 'f-savings': d.assets?.savings_balance, 'f-retirement': d.assets?.retirement_balance,
+    'f-fico': d.credit?.fico_score, 'f-derog': d.credit?.derogatory_marks,
+    'f-bankruptcy': d.credit?.bankruptcies, 'f-foreclosure': d.credit?.foreclosures
+  };
+  for (const [id, val] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el && val !== undefined && val !== null) el.value = val;
+  }
+}
+
+function syncJsonToForm() {
+  try {
+    const d = JSON.parse(document.getElementById('jsonEditor').value);
+    populateForm(d);
+  } catch { /* ignore parse errors */ }
+}
+
+function loadSample(num) {
+  const d = SAMPLES[num];
+  populateForm(d);
+  document.getElementById('jsonEditor').value = JSON.stringify(d, null, 2);
+  log(`Loaded sample application ${num}`, 'info');
+  resetResult();
+}
+
+// ── API calls ────────────────────────────────────────────────────────
+function getPayload() {
+  const jsonTab = document.querySelector('#tab-json.active');
+  if (jsonTab) {
+    try { return JSON.parse(document.getElementById('jsonEditor').value); }
+    catch { log('Invalid JSON in editor', 'err'); return null; }
+  }
+  return buildPayloadFromForm();
+}
+
+async function submitApp() {
+  const payload = getPayload();
+  if (!payload) return;
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  log(`Submitting application ${payload.application_id}…`);
+  try {
+    const resp = await fetch(`${API}/applications`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (!resp.ok) { log(`Error: ${data.detail || resp.statusText}`, 'err'); return; }
+    currentAppId = data.application_id;
+    log(`✓ Application ${currentAppId} submitted (${data.status})`, 'ok');
+    document.getElementById('btnRun').disabled = false;
+    document.getElementById('btnStatus').disabled = false;
+    setBadge('PENDING');
+  } catch (e) {
+    log(`Network error: ${e.message}`, 'err');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function runWorkflow() {
+  if (!currentAppId) return;
+  const btn = document.getElementById('btnRun');
+  btn.disabled = true;
+  log(`Triggering workflow for ${currentAppId}…`);
+  showRunning();
+  try {
+    const resp = await fetch(`${API}/applications/${encodeURIComponent(currentAppId)}/run`, { method: 'POST' });
+    const data = await resp.json();
+    if (!resp.ok) { log(`Error: ${data.detail || resp.statusText}`, 'err'); showWaiting(); btn.disabled = false; return; }
+    log(`✓ Workflow started (${data.status})`, 'ok');
+    setBadge('RUNNING');
+    startPolling();
+  } catch (e) {
+    log(`Network error: ${e.message}`, 'err');
+    showWaiting();
+    btn.disabled = false;
+  }
+}
+
+async function checkStatus() {
+  if (!currentAppId) return;
+  try {
+    const resp = await fetch(`${API}/applications/${encodeURIComponent(currentAppId)}/status`);
+    const data = await resp.json();
+    if (!resp.ok) { log(`Error: ${data.detail}`, 'err'); return; }
+    log(`Status: ${data.status}`, 'info');
+    setBadge(data.status);
+    if (data.status === 'COMPLETED' && data.result) {
+      stopPolling();
+      renderResult(data.result);
+    } else if (data.status === 'FAILED') {
+      stopPolling();
+      stopAgentAnimation();
+      log('Workflow failed', 'err');
+      if (data.result) {
+        renderResult(data.result);
+      } else {
+        showWaiting();
+      }
+      document.getElementById('btnRun').disabled = false;
+    }
+    return data;
+  } catch (e) {
+    log(`Network error: ${e.message}`, 'err');
+  }
+}
+
+function startPolling() {
+  stopPolling();
+  pollTimer = setInterval(async () => {
+    const data = await checkStatus();
+    if (data && (data.status === 'COMPLETED' || data.status === 'FAILED')) stopPolling();
+  }, 3000);
+}
+function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+
+// ── UI state helpers ─────────────────────────────────────────────────
+function showWaiting() {
+  document.getElementById('resultWaiting').classList.remove('hidden');
+  document.getElementById('resultRunning').classList.add('hidden');
+  document.getElementById('resultContent').classList.add('hidden');
+}
+function showRunning() {
+  document.getElementById('resultWaiting').classList.add('hidden');
+  document.getElementById('resultRunning').classList.remove('hidden');
+  document.getElementById('resultContent').classList.add('hidden');
+  startAgentAnimation();
+}
+function resetResult() {
+  currentAppId = null;
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('btnStatus').disabled = true;
+  showWaiting();
+  setBadge('WAITING');
+}
+
+function startAgentAnimation() {
+  stopAgentAnimation();
+  agentAnimStep = 0;
+  updateAgentSteps();
+  agentAnimTimer = setInterval(() => {
+    if (agentAnimStep < AGENT_STEP_COUNT - 1) {
+      agentAnimStep++;
+      updateAgentSteps();
+    } else {
+      // Hold on last step until workflow completes
+      clearInterval(agentAnimTimer);
+      agentAnimTimer = null;
+    }
+  }, AGENT_STEP_INTERVAL);
+}
+
+function stopAgentAnimation() {
+  if (agentAnimTimer) { clearInterval(agentAnimTimer); agentAnimTimer = null; }
+  agentAnimStep = 0;
+  // Reset all steps
+  document.querySelectorAll('.agent-step').forEach(s => {
+    s.classList.remove('active', 'completed');
+    const icon = s.querySelector('.step-icon');
+    icon.textContent = parseInt(s.dataset.agent) + 1;
+  });
+}
+
+function updateAgentSteps() {
+  document.querySelectorAll('.agent-step').forEach(s => {
+    const idx = parseInt(s.dataset.agent);
+    const icon = s.querySelector('.step-icon');
+    s.classList.remove('active', 'completed');
+    if (idx < agentAnimStep) {
+      s.classList.add('completed');
+      icon.textContent = '✓';
+    } else if (idx === agentAnimStep) {
+      s.classList.add('active');
+      icon.textContent = idx + 1;
+    } else {
+      icon.textContent = idx + 1;
+    }
+  });
+}
+
+function completeAllAgentSteps() {
+  stopAgentAnimation();
+  document.querySelectorAll('.agent-step').forEach(s => {
+    s.classList.add('completed');
+    s.classList.remove('active');
+    s.querySelector('.step-icon').textContent = '✓';
+  });
+}
+
+function setBadge(status) {
+  const el = document.getElementById('statusBadge');
+  el.textContent = status;
+  el.className = 'badge';
+  const map = { PENDING:'badge-pending', RUNNING:'badge-running', COMPLETED:'badge-approve',
+                FAILED:'badge-decline', WAITING:'badge-pending' };
+  el.classList.add(map[status] || 'badge-pending');
+}
+
+// ── Render result ────────────────────────────────────────────────────
+function renderResult(r) {
+  completeAllAgentSteps();
+  // Brief pause to show all-complete state before revealing results
+  setTimeout(() => {
+    document.getElementById('resultWaiting').classList.add('hidden');
+    document.getElementById('resultRunning').classList.add('hidden');
+    document.getElementById('resultContent').classList.remove('hidden');
+  }, 600);
+
+  // Decision banner
+  const banner = document.getElementById('decisionBanner');
+  const decText = document.getElementById('decisionText');
+  decText.textContent = r.decision;
+  const colors = {
+    APPROVE: { bg:'#dcfce7', fg:'#16a34a' },
+    CONDITIONAL_APPROVE: { bg:'#fef3c7', fg:'#d97706' },
+    REFER_TO_HUMAN: { bg:'#cffafe', fg:'#0891b2' },
+    DECLINE: { bg:'#fee2e2', fg:'#dc2626' }
+  };
+  const c = colors[r.decision] || colors.REFER_TO_HUMAN;
+  banner.style.background = c.bg;
+  decText.style.color = c.fg;
+
+  // Human review
+  const hrEl = document.getElementById('humanReview');
+  r.human_review_required ? hrEl.classList.remove('hidden') : hrEl.classList.add('hidden');
+
+  // Metrics
+  const mg = document.getElementById('metricsGrid');
+  const m = r.metrics || {};
+  mg.innerHTML = '';
+  const metrics = [
+    ['DTI', m.dti != null ? (m.dti * (m.dti < 1 ? 100 : 1)).toFixed(1) + '%' : '—'],
+    ['LTV', m.ltv != null ? (m.ltv * (m.ltv < 1 ? 100 : 1)).toFixed(1) + '%' : '—'],
+    ['Monthly Income', m.monthly_income != null ? '$' + Number(m.monthly_income).toLocaleString() : '—'],
+    ['Monthly Debt', m.monthly_debt != null ? '$' + Number(m.monthly_debt).toLocaleString() : '—'],
+    ['Residual Income', m.residual_income != null ? '$' + Number(m.residual_income).toLocaleString() : '—']
+  ];
+  for (const [label, val] of metrics) {
+    mg.innerHTML += `<div class="metric-card"><div class="metric-value">${val}</div><div class="metric-label">${label}</div></div>`;
+  }
+
+  // Lists
+  renderList('reasonsList', 'reasonsSection', r.reasons);
+  renderList('missingDocsList', 'missingDocsSection', r.missing_documents, true);
+  renderList('riskList', 'riskSection', r.risk_flags, true);
+  renderList('complianceList', 'complianceSection', r.compliance_notes, true);
+
+  // Messages
+  document.getElementById('borrowerMsg').textContent = r.borrower_message || '—';
+  document.getElementById('uwSummary').textContent = r.underwriter_summary || '—';
+
+  setBadge(r.decision);
+  log(`✓ Result received: ${r.decision}`, 'ok');
+}
+
+function renderList(listId, sectionId, items, hideIfEmpty = false) {
+  const ul = document.getElementById(listId);
+  const sec = document.getElementById(sectionId);
+  ul.innerHTML = '';
+  if (!items || items.length === 0) {
+    if (hideIfEmpty) sec.classList.add('hidden');
+    else ul.innerHTML = '<li>—</li>';
+    return;
+  }
+  sec.classList.remove('hidden');
+  for (const item of items) ul.innerHTML += `<li>${escapeHtml(item)}</li>`;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+loadSample(1);
+log('Ready. Submit an application to begin.', 'info');
+</script>
+</body>
+</html>

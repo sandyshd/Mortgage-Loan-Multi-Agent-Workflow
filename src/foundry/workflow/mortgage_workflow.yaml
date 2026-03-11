@@ -1,0 +1,199 @@
+# Workflow: Mortgage Loan Origination – Multi-Agent
+# Platform: Azure AI Foundry Agent Service
+# This YAML describes the logical orchestration flow.
+# Deploy via Azure AI Foundry portal or VS Code extension.
+
+name: mortgage_loan_origination
+display_name: "Mortgage Loan Origination Workflow"
+description: >
+  Multi-agent workflow that processes a mortgage application through
+  intake validation, document checking, underwriting, risk analysis,
+  compliance review, and borrower communications.
+  DISCLAIMER: Synthetic demo only – not real underwriting.
+
+version: "1.0.0"
+
+# ── Agents (references to Foundry-hosted agents) ────────────────────────
+agents:
+  orchestrator:
+    ref: OrchestratorAgent
+    role: primary
+    description: Coordinates all specialist agents and enforces final decision logic.
+
+  intake:
+    ref: IntakeAgent
+    role: specialist
+    description: Validates and normalises the loan application data.
+
+  document:
+    ref: DocumentAgent
+    role: specialist
+    description: Checks required documents and extracts key facts.
+
+  underwriting:
+    ref: UnderwritingAgent
+    role: specialist
+    description: Computes DTI/LTV and recommends preliminary decision.
+
+  risk:
+    ref: RiskAgent
+    role: specialist
+    description: Flags fraud, inconsistency, and risk signals.
+
+  compliance:
+    ref: ComplianceAgent
+    role: specialist
+    description: Ensures fair-lending compliance and safe language.
+
+  comms:
+    ref: CommsAgent
+    role: specialist
+    description: Generates borrower message and underwriter summary.
+
+# ── Input Schema ────────────────────────────────────────────────────────
+input:
+  type: object
+  properties:
+    application:
+      type: object
+      description: Full mortgage application JSON
+    documents:
+      type: array
+      description: List of document metadata with text snippets
+
+# ── Steps ───────────────────────────────────────────────────────────────
+steps:
+
+  - id: step_intake
+    agent: intake
+    description: Validate and normalise the application
+    input:
+      application: "{{ input.application }}"
+    output_variable: intake_result
+
+  - id: step_documents
+    agent: document
+    description: Check document completeness and extract facts
+    input:
+      required_docs:
+        - W2
+        - PAYSTUB
+        - BANK_STATEMENT
+        - GOVERNMENT_ID
+        - PURCHASE_CONTRACT
+      provided_docs: "{{ input.documents }}"
+    output_variable: docs_result
+
+  - id: step_underwriting
+    agent: underwriting
+    description: Compute DTI/LTV metrics and preliminary decision
+    depends_on: [step_intake]
+    input:
+      monthly_gross_income: "{{ intake_result.normalised_application.income.monthly_gross }}"
+      other_income: "{{ intake_result.normalised_application.income.other_monthly_income }}"
+      debts: "{{ intake_result.normalised_application.debts }}"
+      loan_amount: "{{ intake_result.normalised_application.loan.requested_amount }}"
+      appraised_value: "{{ intake_result.normalised_application.property.appraised_value }}"
+      purchase_price: "{{ intake_result.normalised_application.property.purchase_price }}"
+      fico_score: "{{ intake_result.normalised_application.credit.fico_score }}"
+      loan_type: "{{ intake_result.normalised_application.loan_type }}"
+    output_variable: uw_result
+
+  - id: step_risk
+    agent: risk
+    description: Flag fraud and inconsistency signals
+    depends_on: [step_intake, step_documents]
+    input:
+      borrower: "{{ intake_result.normalised_application.borrower }}"
+      employment: "{{ intake_result.normalised_application.employment }}"
+      assets: "{{ intake_result.normalised_application.assets }}"
+      extracted_facts: "{{ docs_result.extracted_facts }}"
+      credit: "{{ intake_result.normalised_application.credit }}"
+    output_variable: risk_result
+
+  - id: step_compliance
+    agent: compliance
+    description: Check policy guardrails and fair-lending language
+    depends_on: [step_underwriting, step_risk]
+    input:
+      application: "{{ intake_result.normalised_application }}"
+      uw_decision: "{{ uw_result.decision }}"
+      uw_reasons: "{{ uw_result.reasons }}"
+      risk_flags: "{{ risk_result.risk_flags }}"
+    output_variable: compliance_result
+
+  # ── Decision Logic (evaluated by orchestrator) ──────────────────────
+  - id: step_decision
+    type: condition
+    description: Apply decision rules
+    depends_on: [step_compliance, step_documents, step_underwriting, step_risk]
+    conditions:
+      - if: "{{ compliance_result.status == 'block' }}"
+        set:
+          final_decision: "REFER_TO_HUMAN"
+          decision_reason: "Compliance review requires human intervention"
+      - elif: "{{ docs_result.missing_count > 0 }}"
+        set:
+          final_decision: "CONDITIONAL_APPROVE"
+          decision_reason: "Missing required documents"
+      - elif: "{{ uw_result.decision in ['DECLINE', 'REFER'] }}"
+        set:
+          final_decision: "{{ uw_result.decision }}"
+          decision_reason: "Underwriting decision"
+      - else:
+        set:
+          final_decision: "APPROVE"
+          decision_reason: "All checks passed"
+
+  # ── Human-in-the-loop gate ──────────────────────────────────────────
+  - id: step_human_review
+    type: condition
+    description: Flag for human review when needed
+    depends_on: [step_decision]
+    conditions:
+      - if: "{{ final_decision in ['REFER_TO_HUMAN', 'DECLINE'] or risk_result.risk_level == 'HIGH' }}"
+        set:
+          human_review_required: true
+      - else:
+        set:
+          human_review_required: false
+
+  # ── Communications ──────────────────────────────────────────────────
+  - id: step_comms
+    agent: comms
+    description: Generate borrower message and underwriter summary
+    depends_on: [step_decision, step_human_review]
+    input:
+      decision: "{{ final_decision }}"
+      reasons: "{{ uw_result.reasons }}"
+      missing_documents: "{{ docs_result.missing_documents }}"
+      metrics: "{{ uw_result.metrics }}"
+      risk_flags: "{{ risk_result.risk_flags }}"
+      compliance_notes: "{{ compliance_result.compliance_notes }}"
+      human_review_required: "{{ human_review_required }}"
+    output_variable: comms_result
+
+# ── Output Schema ───────────────────────────────────────────────────────
+output:
+  type: object
+  properties:
+    application_id:
+      value: "{{ input.application.application_id }}"
+    decision:
+      value: "{{ final_decision }}"
+    human_review_required:
+      value: "{{ human_review_required }}"
+    reasons:
+      value: "{{ uw_result.reasons }}"
+    missing_documents:
+      value: "{{ docs_result.missing_documents }}"
+    metrics:
+      value: "{{ uw_result.metrics }}"
+    risk_flags:
+      value: "{{ risk_result.risk_flags }}"
+    compliance_notes:
+      value: "{{ compliance_result.compliance_notes }}"
+    borrower_message:
+      value: "{{ comms_result.borrower_message }}"
+    underwriter_summary:
+      value: "{{ comms_result.underwriter_summary }}"

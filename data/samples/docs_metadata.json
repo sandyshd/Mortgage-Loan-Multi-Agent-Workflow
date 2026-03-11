@@ -1,0 +1,75 @@
+{
+  "application_id": "APP-2026-00101",
+  "documents": [
+    {
+      "doc_type": "W2",
+      "filename": "W2_2025.txt",
+      "year": 2025,
+      "status": "RECEIVED",
+      "received_date": "2026-03-08"
+    },
+    {
+      "doc_type": "PAYSTUB",
+      "filename": "paystub_feb2026.txt",
+      "year": 2026,
+      "month": 2,
+      "status": "RECEIVED",
+      "received_date": "2026-03-08"
+    },
+    {
+      "doc_type": "BANK_STATEMENT",
+      "filename": "bank_statement_jan2026.txt",
+      "year": 2026,
+      "month": 1,
+      "status": "RECEIVED",
+      "received_date": "2026-03-09"
+    },
+    {
+      "doc_type": "GOVERNMENT_ID",
+      "filename": "drivers_license.txt",
+      "status": "RECEIVED",
+      "received_date": "2026-03-07"
+    },
+    {
+      "doc_type": "PURCHASE_CONTRACT",
+      "filename": "purchase_contract.txt",
+      "status": "RECEIVED",
+      "received_date": "2026-03-09"
+    }
+  ],
+  "_app2_documents": [
+    {
+      "doc_type": "W2",
+      "filename": "W2_2025.txt",
+      "year": 2025,
+      "status": "RECEIVED",
+      "received_date": "2026-03-08"
+    },
+    {
+      "doc_type": "PAYSTUB",
+      "filename": "paystub_feb2026.txt",
+      "year": 2026,
+      "month": 2,
+      "status": "RECEIVED",
+      "received_date": "2026-03-08"
+    },
+    {
+      "doc_type": "BANK_STATEMENT",
+      "filename": null,
+      "status": "MISSING",
+      "received_date": null
+    },
+    {
+      "doc_type": "GOVERNMENT_ID",
+      "filename": "drivers_license.txt",
+      "status": "RECEIVED",
+      "received_date": "2026-03-07"
+    },
+    {
+      "doc_type": "PURCHASE_CONTRACT",
+      "filename": null,
+      "status": "MISSING",
+      "received_date": null
+    }
+  ]
+}

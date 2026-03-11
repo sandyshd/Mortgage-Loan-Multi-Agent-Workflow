@@ -1,0 +1,20 @@
+SYNTHETIC DOCUMENT – FOR DEMO PURPOSES ONLY
+
+                         PAY STATEMENT
+                      Pay Period: Feb 1-28, 2026
+
+Employee: Jane Doe                     Employee ID: EMP-44821
+Employer: Acme Corp
+
+                  CURRENT        YTD
+Gross Pay:        $9,500.00      $19,000.00
+Federal Tax:      $1,615.00      $ 3,230.00
+State Tax:        $  451.25      $   902.50
+Social Security:  $  589.00      $ 1,178.00
+Medicare:         $  137.75      $   275.50
+401(k):           $  475.00      $   950.00
+Health Ins:       $  210.00      $   420.00
+-----------------------------------------
+Net Pay:          $6,021.00      $12,044.00
+
+Direct Deposit: ****4321 (Checking)  $6,021.00

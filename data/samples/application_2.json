@@ -1,0 +1,59 @@
+{
+  "application_id": "APP-2026-00102",
+  "submission_date": "2026-03-10",
+  "loan_type": "FHA",
+  "loan_purpose": "PURCHASE",
+  "property": {
+    "address": "1600 Pennsylvania Ave NW, Washington, DC 20500",
+    "type": "CONDO",
+    "appraised_value": 310000,
+    "purchase_price": 325000
+  },
+  "loan": {
+    "requested_amount": 308750,
+    "term_months": 360,
+    "interest_rate_requested": 6.50
+  },
+  "borrower": {
+    "first_name": "Carlos",
+    "last_name": "Rivera",
+    "ssn_last4": "1234",
+    "dob": "1992-11-02",
+    "email": "carlos.r@example.com",
+    "phone": "555-987-6543",
+    "citizenship": "US_CITIZEN"
+  },
+  "employment": {
+    "employer_name": "Metro Health System",
+    "title": "Registered Nurse",
+    "years_at_job": 1,
+    "monthly_gross_income": 5800
+  },
+  "income": {
+    "monthly_gross": 5800,
+    "other_monthly_income": 400
+  },
+  "debts": {
+    "monthly_auto_loan": 380,
+    "monthly_student_loan": 600,
+    "monthly_credit_card_min": 200,
+    "monthly_other": 100
+  },
+  "assets": {
+    "checking_balance": 12000,
+    "savings_balance": 8500,
+    "retirement_balance": 22000
+  },
+  "credit": {
+    "fico_score": 648,
+    "derogatory_marks": 1,
+    "bankruptcies": 0,
+    "foreclosures": 0
+  },
+  "declarations": {
+    "is_primary_residence": true,
+    "has_outstanding_judgments": false,
+    "is_party_to_lawsuit": false,
+    "has_prior_foreclosure": false
+  }
+}

@@ -1,0 +1,18 @@
+SYNTHETIC DOCUMENT – FOR DEMO PURPOSES ONLY
+
+                    DRIVER'S LICENSE
+
+State: Illinois
+License Number: D620-XXXX-XXXX
+Class: D (Non-commercial)
+
+Name:  Jane Doe
+DOB:   05/14/1988
+Sex:   F
+Height: 5'7"
+Eyes:  Brown
+
+Address: 123 Oak Lane, Springfield, IL 62704
+
+Issue Date:  09/15/2023
+Expiration:  05/14/2028
