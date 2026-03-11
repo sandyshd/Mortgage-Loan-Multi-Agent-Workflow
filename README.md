@@ -20,7 +20,7 @@ flowchart TD
         D[GET /applications/id/status]
     end
 
-    subgraph Azure AI Foundry — New Agents API
+    subgraph Azure AI Foundry - New Agents API
         WF[MortgageLoanOrigination Workflow]
         O[OrchestratorAgent]
         I[IntakeAgent]
