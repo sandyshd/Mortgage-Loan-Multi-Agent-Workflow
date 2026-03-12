@@ -21,7 +21,7 @@
 
 .EXAMPLE
     .\deploy.ps1
-    .\deploy.ps1 -ResourceGroup "my-rg" -Location "westus2" -ProjectName "berkadia"
+    .\deploy.ps1 -ResourceGroup "my-rg" -Location "westus2" -ProjectName "mortgage-demo"
 #>
 
 param(

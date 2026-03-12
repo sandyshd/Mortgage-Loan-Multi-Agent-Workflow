@@ -95,7 +95,7 @@ flowchart LR
 ## Repository Structure
 
 ```
-BerkadiaDemo/
+mortgage-loan-origination/
 ├── README.md
 ├── .env.sample
 ├── .gitignore
@@ -164,7 +164,7 @@ Alternatively, you can create a project manually:
 ### 2. Configure Environment
 
 ```bash
-cd BerkadiaDemo
+cd mortgage-loan-origination
 cp .env.sample .env
 ```
 
@@ -405,7 +405,7 @@ deployment, and opening the browser:
 Or with custom parameters:
 
 ```powershell
-.\deploy.ps1 -ResourceGroup "my-rg" -Location "westus2" -ProjectName "berkadia"
+.\deploy.ps1 -ResourceGroup "my-rg" -Location "westus2" -ProjectName "mortgage-demo"
 ```
 
 **What it does (5 steps):**
